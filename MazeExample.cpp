@@ -6,8 +6,8 @@
 using namespace std;
 
 /*
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@S@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@       @                     @         @     @             @         @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@       @                     @    .....@     @             @         @
 @ @@@ @ @ @@@@@@@ @@@@@ @@@@@ @ @@@@@@@@@ @ @@@ @ @@@ @@@@@@@ @@@@@ @@@
 @   @ @ @ @     @ @   @     @   @         @     @   @ @       @   @   @
 @ @@@ @ @@@ @@@ @ @ @ @@@@@ @@@@@ @@@@@@@@@@@@@@@ @ @ @ @@@@@@@@@ @@@ @
@@ -22,8 +22,37 @@ using namespace std;
 */
 
 
-void SolveMaze(int row, int col, char maze[][100], int rowSz, int colSz, bool& foundEnd, string& finaldir, string currDir) {
+void SolveMaze(int row, int col, char maze[][100], int rowSz, int colSz,
+               bool& foundEnd, string currDir, string& finalDir) {
 
+    if (foundEnd) {
+        return;
+    }
+
+    if (row < 0 || col < 0 || row >= rowSz || col >= colSz) {
+        return;
+    }
+
+    if (maze[row][col] == '.' || maze[row][col] == '@') {
+        return;
+    }
+
+    if (maze[row][col] == 'F') {
+        finalDir = currDir;
+        foundEnd = true;
+        return;
+    }
+
+    maze[row][col] = '.';
+
+    SolveMaze(row - 1, col, maze, rowSz, colSz, foundEnd, currDir+"U", finalDir); // North
+    SolveMaze(row + 1, col, maze, rowSz, colSz, foundEnd, currDir+"D", finalDir); // South
+    SolveMaze(row, col + 1, maze, rowSz, colSz, foundEnd, currDir+"R", finalDir); // East
+    SolveMaze(row, col - 1, maze, rowSz, colSz, foundEnd, currDir+"L", finalDir); // West
+
+    if (!foundEnd) {
+        maze[row][col] = ' ';
+    }
 }
 
 int main()
@@ -63,11 +92,12 @@ int main()
 	
 	bool foundEnd = false;
 
-	string finaldir = "";
+	string finalDir = "";
 	string currDir = "";
-	SolveMaze(startRow, startCol, maze, rowSz, colSz, foundEnd, finaldir, currDir);
+
+	SolveMaze(startRow, startCol, maze, rowSz, colSz, foundEnd, currDir, finalDir);
 	
-	cout << "Directions: " << finaldir << endl;
+	cout << "Directions: " << finalDir << endl;
 
 	// Print out the maze with the path shown
 	for (int i = 0; i < rowSz; i++) {
